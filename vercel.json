@@ -1,15 +1,17 @@
 {
-  "routes": [
+  "headers": [
     {
-      "src": "/validation-key.txt",
-      "dest": "/validation-key.txt"
-    },
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
+      "source": "/validation-key.txt",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        },
+        {
+          "key": "Access-Control-Allow-Origin",
+          "value": "*"
+        }
+      ]
     }
   ]
 }
