@@ -2,7 +2,7 @@
   "routes": [
     {
       "src": "/validation-key.txt",
-      "dest": "/public/validation-key.txt"
+      "dest": "/validation-key.txt"
     },
     {
       "handle": "filesystem"
