@@ -7,8 +7,11 @@ const PI_API_BASE = "https://api.minepi.com/v2"
 async function piFetch(path: string, body?: Record<string, unknown>) {
   const apiKey = process.env.PI_API_KEY
   if (!apiKey) {
+    console.error("[Pi API Error]: PI_API_KEY غير موجود في Vercel Environment Variables")
     throw new Error("PI_API_KEY غير مضبوط في بيئة العمل")
   }
+
+  console.log(`[Pi API Request]: إرسال طلب إلى ${PI_API_BASE}${path}`)
 
   const res = await fetch(`${PI_API_BASE}${path}`, {
     method: "POST",
@@ -20,16 +23,30 @@ async function piFetch(path: string, body?: Record<string, unknown>) {
   })
 
   const text = await res.text()
-  const data = text ? JSON.parse(text) : {}
-  if (!res.ok) {
-    throw new Error(data?.error_message || `فشل طلب Pi (${res.status})`)
+  let data: any = {}
+  if (text) {
+    try {
+      data = JSON.parse(text)
+    } catch {
+      data = { rawText: text }
+    }
   }
+
+  if (!res.ok) {
+    const errorDetails = data?.error_message || data?.message || text || `فشل طلب Pi (${res.status})`
+    console.error(`[Pi API Error Status ${res.status}]:`, errorDetails)
+    throw new Error(errorDetails)
+  }
+
+  console.log(`[Pi API Success]: تم الرد بنجاح من Pi Server`, data)
   return data
 }
 
 export async function POST(request: NextRequest) {
   try {
     const { action, paymentId, txid } = await request.json()
+
+    console.log(`[Pi Route Incoming Action]: ${action} | PaymentID: ${paymentId}`)
 
     if (!paymentId || typeof paymentId !== "string") {
       return NextResponse.json({ error: "paymentId مطلوب" }, { status: 400 })
@@ -51,7 +68,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "إجراء غير معروف" }, { status: 400 })
   } catch (error) {
     const message = error instanceof Error ? error.message : "خطأ غير متوقع"
-    console.log("[v0] خطأ في مسار Pi:", message)
+    console.error("[v0] خطأ في مسار Pi:", message)
     return NextResponse.json({ error: message }, { status: 500 })
   }
 }
