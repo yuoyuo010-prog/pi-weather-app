@@ -31,7 +31,7 @@ export async function fetchWeatherData(city: string): Promise<Weather | null> {
   if (!apiKey) {
     // Simulate a short network delay for a realistic loading state.
     await new Promise((r) => setTimeout(r, 500))
-    const target = city?.trim() || 'الرياض'
+    const target = city?.trim() || 'القدس'
     const d = pickForCity(target)
     return {
       city: target,
