@@ -85,6 +85,16 @@ export async function loginWithPi(): Promise<PiUser> {
 
   const onIncompletePaymentFound = (payment: unknown) => {
     console.log('[v0] تنبيه: توجد دفعة غير مكتملة:', payment)
+    
+    // إضافة التعامل تلقائياً مع المعاملات المعلقة لتجنب تعليق حظر الدفع مستقبلاً
+    const p = payment as { identifier?: string; transaction?: { txid?: string } }
+    if (p && p.identifier) {
+      if (p.transaction && p.transaction.txid) {
+        callPiServer('complete', { paymentId: p.identifier, txid: p.transaction.txid }).catch(console.error)
+      } else {
+        callPiServer('approve', { paymentId: p.identifier }).catch(console.error)
+      }
+    }
   }
 
   const auth = await withTimeout(Pi.authenticate(scopes, onIncompletePaymentFound), 6000)
