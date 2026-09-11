@@ -27,7 +27,7 @@ export function HomeScreen({
   onLogout: () => void
   onUpgrade: () => void
 }) {
-  const [cityInput, setCityInput] = useState('الرياض')
+  const [cityInput, setCityInput] = useState('القدس')
   const [weather, setWeather] = useState<Weather | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -39,7 +39,7 @@ export function HomeScreen({
   }
 
   useEffect(() => {
-    loadWeather('الرياض')
+    loadWeather('القدس')
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
